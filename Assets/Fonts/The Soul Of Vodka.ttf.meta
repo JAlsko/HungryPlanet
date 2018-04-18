@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 3d87ccc4fc14f43469457a038568c0fe
+timeCreated: 1515547925
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: The Soul Of Vodka
+  fontNames:
+  - The Soul Of Vodka
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

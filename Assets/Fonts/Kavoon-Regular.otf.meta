@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: da2264d2f49061047aed8c25f44ba5a4
+timeCreated: 1504390091
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Kavoon
+  fontNames:
+  - Kavoon
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

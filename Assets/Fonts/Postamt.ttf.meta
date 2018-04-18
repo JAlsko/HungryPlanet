@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 4d3142127ea49d142a749568247f9696
+timeCreated: 1504387505
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Postamt
+  fontNames:
+  - Postamt
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

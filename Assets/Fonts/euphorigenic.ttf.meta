@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 683b9441a6aee154d8a6c9f1fad42fb0
+timeCreated: 1515547803
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Euphorigenic
+  fontNames:
+  - Euphorigenic
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

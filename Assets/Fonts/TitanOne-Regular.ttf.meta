@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: f62720cb6155d9548b4d07e6ae1f3572
+timeCreated: 1515619440
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Titan One
+  fontNames:
+  - Titan One
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

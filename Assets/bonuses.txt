@@ -1,0 +1,91 @@
+base ; 1 ; No Fruit Bits ; ice_cream ; na ; 100 ; Who even likes them? 
+base ; 2 ; No Melting ; ice_cream ; na ; 100 ; Absolute zero temperatures mean dripping’s a thing of the past.
+base ; 3 ; Flying Trucks ; ice_cream ; na ; 100 ; Let me be struck by a flying ice cream truck... AND LIVE!
+base ; 1 ; Frosty Glasses ; milkshakes ; na ; 200 ; Who's up for some frosty chocolate milkshakes?
+base ; 2 ; More Cherries ; milkshakes ; na ; 200 ; Our milkshakes are now 80% cherries.
+base ; 3 ; Giant Straws ; milkshakes ; na ; 200 ; A dessert breakthrough: 10 inch wide straws.
+base ; 1 ; Sugar Ice Cubes ; iced_tea ; na ; 300 ; Sugar makes everything better!
+base ; 2 ; Lemon-ier Lemons ; iced_tea ; na ; 300 ; Normal lemons aren’t sour enough.
+base ; 3 ; Automated Tea Robots ; iced_tea ; na ; 300 ; Tea, Sweet, Cold. Make it so.
+base ; 1 ; Organic Stickers ; apples ; na ; 100 ; A wonderfully vague guarantee!
+base ; 2 ; Edible Pits ; apples ; na ; 100 ; The thing that no one asked for!
+base ; 3 ; Chocolate Apples ; apples ; na ; 100 ; Ever since the invention of magic, anything’s possible!
+base ; 1 ; Chocolate Milk ; milk ; na ; 200 ; A staple of mildly healthy diets everywhere.
+base ; 2 ; Caramel Milk ; milk ; na ; 200 ; An important innovation in making healthy foods unhealthy.
+base ; 3 ; Steak Milk ; milk ; na ; 200 ; One might call this man’s greatest invention yet. One might.
+base ; 1 ; Fried Buns ; burgers ; na ; 300 ; Crunch is key.
+base ; 2 ; Varied Meat Sources ; burgers ; na ; 300 ; My sandwich is a fried boot!
+base ; 3 ; Cheese Stuffed Patties ; burgers ; na ; 300 ; Stuffing cheese where it shouldn’t be is our mission.
+base ; 1 ; Smaller Slices ; cake ; na ; 400 ; That way, you can eat more!
+base ; 2 ; Chocolate Bar Filling ; cake ; na ; 400 ; Everything could use more chocolate, right?
+base ; 3 ; Explosive Candles ; cake ; na ; 400 ; You CAN’T have your cake and eat it.
+base ; 1 ; Radioactive Sours ; candy ; na ; 100 ; Some say the radioactivity isn’t worth the taste. WEAK.
+base ; 2 ; Laxative Taffy ; candy ; na ; 100 ; Why sacrifice taste for regularity?
+base ; 3 ;  ; candy ; na ; 100 ;
+base ; 1 ; Soda Infusion ; hot_cocoa ; na ; 200 ; Lemon lime and chocolate, a match made in heaven.
+base ; 2 ; Too Many Toppings ; hot_cocoa ; na ; 200 ; Marshmallows are for amateurs.
+base ; 3 ; Molten Chocolate ; hot_cocoa ; na ; 200 ; I don't drink hot liquids of any kind. That's the devil's temperature!
+base ; 1 ; No Horse Meat ; meatballs ; na ; 300 ; At least we think so...
+base ; 2 ; Free Furniture ; meatballs ; na ; 300 ; Receive a lamp with every purchase!
+base ; 3 ; Viking Magic ; meatballs ; na ; 300 ; Channeling ancestral power for extra flavor!
+base ; 1 ; Donut Sandwiches ; donuts ; na ; 400 ; A necessary invention for the all-donut diet.
+base ; 2 ; Donut Smoothies ; donuts ; na ; 400 ; An important part of an unbalanced breakfast.
+base ; 3 ; Donut Vitamins ; donuts ; na ; 400 ; All the calories with none of the taste. Healthy!
+base ; 1 ; Footlong Hot Dogs ; hot_dogs ; na ; 100 ; Delicious if not a bit unnecessary.
+base ; 2 ; 6ft Hot Dogs ; hot_dogs ; na ; 100 ; Pick on some food your own size.
+base ; 3 ; Mile-long Hot Dogs ; hot_dogs ; na ; 100 ; Good luck cooking it!
+base ; 1 ; Breakfast Pizza ; pizza ; na ; 200 ; French toast crust and syrup sauce.
+base ; 2 ; Pocket Pizza ; pizza ; na ; 200 ; For the busy glutton on the go.
+base ; 3 ; Money Toppings ; pizza ; na ; 200 ; Time is money, money is power, and power is pizza.
+base ; 1 ; Fried Shell ; tacos ; na ; 300 ; Every food can... nay every food MUST be fried.
+base ; 2 ; Crepe Shell ; tacos ; na ; 300 ; The United Nations of foods.
+base ; 3 ; Pancake Shell ; tacos ; na ; 300 ; Eating these tacos is now an all-day venture.
+base ; 1 ; Better Alphabet Soup ; soup ; na ; 400 ; Now contains the Mandarin and Japanese alphabets. Time to learn!
+base ; 2 ; Perfect Temperature ; soup ; na ; 400 ; State of the art bowls ensure that no soup is too hot.
+base ; 3 ; Soup Vapor ; soup ; na ; 400 ; A new, revolutionary, and somewhat dangerous way to eat soup.
+base ; 1 ; Secret Sauce Recipe ; spaghetti ; na ; 100 ; Ravioli, ravioli, give me the formuoli.
+base ; 2 ;  ; spaghetti ; na ; 100 ; Ravioli, ravioli, give me the formuoli.
+base ; 3 ;  ; spaghetti ; na ; 100 ; Ravioli, ravioli, give me the formuoli.
+base ; 1 ;  ; soda ; na ; 200 ; 
+base ; 2 ;  ; soda ; na ; 200 ; 
+base ; 3 ;  ; soda ; na ; 200 ; 
+base ; 1 ;  ; fried_fish ; na ; 300 ; 
+base ; 2 ;  ; fried_fish ; na ; 300 ; 
+base ; 3 ;  ; fried_fish ; na ; 300 ; 
+
+base ; 1 ;  ; sushi ; na ; 400 ; 
+base ; 2 ;  ; sushi ; na ; 400 ; 
+base ; 3 ;  ; sushi ; na ; 400 ; 
+#base ; 1 ;  ; na ; 0 ; 
+#
+group ; 1 ;  ; pizza ; meatballs ; 250 ; I only like the word 'lovers' when it's between meat and pizza
+group ; 1 ;  ; pizza ; spaghetti ; 150 ; 
+group ; 1 ;  ; pizza ; soup ; 300 ; 
+group ; 1 ;  ; hot_dogs ; tacos ; 200 ; You had me at meat tornado.
+group ; 1 ;  ; hot_dogs ; burgers ; 200 ; 
+group ; 1 ;  ; hot_dogs ; meatballs ; 200 ; 
+group ; 1 ;  ; tacos ; tacos ; 300 ; 
+group ; 1 ;  ; donuts ; ice_cream ; 250 ; 
+group ; 1 ;  ; donuts ; cake ; 400 ; 
+group ; 1 ;  ; donuts ; milkshakes ; 300 ; 
+group ; 1 ;  ; candy ; hot_cocoa ; 150 ; 
+group ; 1 ;  ; candy ; cake ; 250 ; 
+group ; 1 ;  ; candy ; ice_cream ; 100 ; 
+group ; 1 ;  ; spaghetti ; meatballs ; 200 ; 
+group ; 1 ;  ; spaghetti ; soup ; 250 ; 
+group ; 1 ;  ; burgers ; milkshakes ; 250 ; He burnt my patty. He burnt my fries... He burnt my shake.
+group ; 1 ;  ; ice_cream ; milkshakes ; 150 ; 
+group ; 1 ;  ; sushi ; sushi ; 400 ; 
+group ; 1 ;  ; sushi ; fried_fish ; 350 ; 
+group ; 1 ;  ; sushi ; soup ; 400 ; 
+group ; 1 ;  ; cake ; hot_cocoa ; 300 ; 
+group ; 1 ;  ; tacos ; fried_fish ; 300 ; 
+group ; 1 ;  ; soda ; all ; 200 ; 
+group ; 1 ;  ; apples ; all ; 100 ; 
+group ; 1 ;  ; milk ; all ; 200 ; 
+#group ; 1 ;  ;  ;  ; 0 ; 
+#
+spin ; 1 ;  ; na ; na ; 100 ; 
+spin ; 1 ;  ; na ; na ; 100 ; 
+spin ; 1 ;  ; na ; na ; 100 ; 
+spin ; 1 ;  ; na ; na ; 100 ;  
