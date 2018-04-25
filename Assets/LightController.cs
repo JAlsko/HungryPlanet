@@ -5,24 +5,25 @@ using UnityEngine;
 
 public class LightController : MonoBehaviour {
 
-	public float elapsedTime = 0;
+	private float elapsedTime = 0;							//Keeps track of time elapsed since game start
+	private bool isDay = true;								//Tracks whether or not currently in daytime
 
-	public bool isDay = true;
+	[SerializeField] private MeshRenderer sky1;				//Skybox1
+	[SerializeField] private MeshRenderer sky2;				//Skybox2
+	[SerializeField] private Light sun;						//Directional light
 
-	public MeshRenderer sky1;
-	public MeshRenderer sky2;
-	public Light sun;
+	private float daySpeed = 0.01f;							//Speed multiplier for time elapse
 
-	public float daySpeed = 1;
+	[SerializeField] private Material voxel_material;		//Material used for buildings and props
 
-	public Material voxel_material;
+	[SerializeField] private Gradient sunGradient;			//Color gradient for sunlight throughout day
+	[SerializeField] private Gradient ambientGradient;		//Value gradient for ambient light throughout day
+	[SerializeField] private Gradient skyGradient;			//Value gradient for skybox texture offset throughout day
 
-	public Gradient sunGradient;
-	public Gradient ambientGradient;
-	public Gradient skyGradient;
+	private static float DAY_END_TIME = .35f;				//Based on day length of 1, end time of daylight
+	private static float DAY_START_TIME = .7f;				//Start time of daylight
 
-	public float offset = 0;
-
+	//Unused variables for preset time settings
 	[Serializable]
 	public class TimeSetting
 	{
@@ -31,31 +32,19 @@ public class LightController : MonoBehaviour {
 		public float sunIntensity;
 		public float skyOffset;
 	}
-	//.35 and .7
-	public List<TimeSetting> timeSettings = new List<TimeSetting>();
+	[SerializeField] private List<TimeSetting> timeSettings = new List<TimeSetting>();
 
 	void Start () {
-
-		sky1 = GameObject.Find ("SkyDome").GetComponent<MeshRenderer>();
-		sky2 = GameObject.Find ("SkyDome(1)").GetComponent<MeshRenderer>();
-		sun = GameObject.Find ("Sunlight").GetComponent<Light>();
-	}
-
-	public void SetTime(int time) {
-		sky1.material.mainTextureOffset = Vector2.right * timeSettings [time].skyOffset;
-		sky2.material.mainTextureOffset = Vector2.right * timeSettings [time].skyOffset;
-		sun.color = timeSettings [time].sunColor;
-		sun.intensity = timeSettings [time].sunIntensity;
-		RenderSettings.ambientLight = timeSettings [time].ambientColor;
+		skyGradient.mode = GradientMode.Blend;
 	}
 
 	void FixedUpdate() {
-		elapsedTime += Time.deltaTime * daySpeed;
+		elapsedTime += Time.deltaTime * daySpeed; //Update time based on current day speed
 
-		if ((elapsedTime % 1 >= .35f && elapsedTime % 1 < .7f) && isDay) {
+		if ((elapsedTime % 1 >= DAY_END_TIME && elapsedTime % 1 < DAY_START_TIME) && isDay) { //If current time is after dusk and haven't switched to night settings, do so
 			isDay = false;
 			ManageWorldLights ();
-		} else if ((elapsedTime % 1 >= .7f || elapsedTime % 1 < .35f) && !isDay) {
+		} else if ((elapsedTime % 1 >= DAY_START_TIME || elapsedTime % 1 < DAY_END_TIME) && !isDay) { //If current time is after dawn and haven't switched to day settings, do so
 			isDay = true;
 			ManageWorldLights ();
 		}
@@ -63,12 +52,46 @@ public class LightController : MonoBehaviour {
 
 	void Update () {
 		if (daySpeed != 0) {
-			skyGradient.mode = GradientMode.Blend;
-			sun.color = sunGradient.Evaluate ((elapsedTime % 1));
-			RenderSettings.ambientLight = ambientGradient.Evaluate ((elapsedTime % 1));
-			offset = (skyGradient.Evaluate ((elapsedTime % 1)).r);
+			sun.color = sunGradient.Evaluate ((elapsedTime % 1)); //Update sunlight color based on sunlight gradient
+			RenderSettings.ambientLight = ambientGradient.Evaluate ((elapsedTime % 1)); //Update ambient light level from ambient gradient
+
+			//Update skybox material with offset to reflect time of day
+			float offset = (skyGradient.Evaluate ((elapsedTime % 1)).r); //Get texture offset amount based on gradient
 			sky1.material.mainTextureOffset = Vector2.right * offset;
 			sky2.material.mainTextureOffset = Vector2.right * offset;
+		}
+	}
+
+	//Unused currently, sets time of day to preset
+	public void SetTime(int time) { 
+		if (time >= timeSettings.Count) {
+			Debug.Log ("Invalid time setting index: " + time);
+			return;
+		}
+		sky1.material.mainTextureOffset = Vector2.right * timeSettings [time].skyOffset;
+		sky2.material.mainTextureOffset = Vector2.right * timeSettings [time].skyOffset;
+		sun.color = timeSettings [time].sunColor;
+		sun.intensity = timeSettings [time].sunIntensity;
+		RenderSettings.ambientLight = timeSettings [time].ambientColor;
+	}
+
+	//Updates point lights in scene
+	void ManagePointLights() {
+		Light[] allLights = FindObjectsOfType<Light>(); //Get all active lights in scene
+		//Go through all point lights and turn them on/off if it's night/daytime
+		foreach (Light l in allLights) {
+			if (l.type == LightType.Point) {
+				l.enabled = !isDay;
+			}
+		}
+	}
+
+	//Updates emission value for building material based on day/night
+	void ManageMaterialLights() {
+		if (isDay) {
+			voxel_material.SetColor ("_EmissionColor", Color.black);
+		} else {
+			voxel_material.SetColor ("_EmissionColor", Color.white);
 		}
 	}
 
@@ -77,20 +100,11 @@ public class LightController : MonoBehaviour {
 		ManageMaterialLights ();
 	}
 
-	void ManagePointLights() {
-		Light[] allLights = FindObjectsOfType<Light>();
-		foreach (Light l in allLights) {
-			if (l.type == LightType.Point) {
-				l.enabled = !isDay;
-			}
-		}
+	public void setDaySpeed(float val) {
+		daySpeed = val;
 	}
 
-	void ManageMaterialLights() {
-		if (isDay) {
-			voxel_material.SetColor ("_EmissionColor", Color.black);
-		} else {
-			voxel_material.SetColor ("_EmissionColor", Color.white);
-		}
+	public float getDaySpeed() {
+		return daySpeed;
 	}
 }

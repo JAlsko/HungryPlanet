@@ -7,86 +7,81 @@ using UnityEngine;
 
 public class MoneyController : MonoBehaviour {
 
-	private static string moneySaveFileName = "moneyInfo.dat";
-	private static float startingMoney = 750;
+	private static string MONEY_SAVE_NAME = "moneyInfo.dat";									//File name of money save file
+	private static float startingMoney = 750;													//Initial money to handle purchasing of first buildings
+	private static float startingSearchCost = 100;												//Initial cost of tile search
 
-	[SerializeField] private float money; //current amount of money
-	[SerializeField] private float totalMoneyAllTime; //gross income
-	[SerializeField] private float mps; //current money per second
-	[SerializeField] private float minSpinMult = 1; //minimum spin speed earnings multiplier
-	[SerializeField] private float maxSpinMult = 2; //maximum spin speed earnings multiplier
-	[SerializeField] private float pityMPS = 0; //money per second without buildings (by spinning)
-	[SerializeField] private float mainMult = 1.15f; //cost increase multiplier
-	[SerializeField] private float upgradeCostMult = 2f; //upgrade cost vs. normal build cost
-	[SerializeField] private float destroyLossMult = .5f;
+	[SerializeField] private float money;														//Current amount of money
+	[SerializeField] private float totalMoneyAllTime;											//Gross income
+	[SerializeField] private float mps; 														//Current money per second
+	[SerializeField] private float minSpinMult = 1; 											//Minimum spin speed earnings multiplier
+	[SerializeField] private float maxSpinMult = 2; 											//Maximum spin speed earnings multiplier
+	[SerializeField] private float pityMPS = 0; 												//Money per second without buildings (by spinning)
+	[SerializeField] private float mainMult = 1.15f; 											//Cost increase multiplier
+	[SerializeField] private float upgradeCostMult = 2f;		 								//Upgrade cost vs. normal build cost
+	[SerializeField] private float destroyLossMult = .5f;										//Multiplier of cost return after destroying buildings
 
-	public Dictionary<string, Dictionary<string, float>> moneyStats = new Dictionary<string, Dictionary<string, float>>();
-
+	private Dictionary<string, Dictionary<string, float>> moneyStats = new Dictionary<string, Dictionary<string, float>>();
 	private Dictionary<string, float> resourceCounts = new Dictionary<string, float> ();
 
-	private Dictionary<string, float> rawMults = new Dictionary<string, float>(); //total money per second multipliers for each food
-	private Dictionary<string, float> storeCounts = new Dictionary<string, float> (); //number of each store type simplified to food types
-	private List<List<string>> buildingGroups = new List<List<string>>(); //groups of buildings simplified to types (for group mults)
-	private Dictionary<string, float> storeCostMults = new Dictionary<string, float>(); //multipliers for store costs for each food
-	private Dictionary<string, float> farmCostMults = new Dictionary<string, float>(); //multipliers for farm costs for each food
+	private Dictionary<string, float> rawMults = new Dictionary<string, float>(); 				//Total money per second multipliers for each food
+	private Dictionary<string, float> storeCounts = new Dictionary<string, float> (); 			//Number of each store type simplified to food types
+	private List<List<string>> buildingGroups = new List<List<string>>(); 						//Groups of buildings simplified to types (for group mults)
+	private Dictionary<string, float> storeCostMults = new Dictionary<string, float>(); 		//Multipliers for store costs for each food
+	private Dictionary<string, float> farmCostMults = new Dictionary<string, float>(); 			//Multipliers for farm costs for each food
 	private float searchCostMult;
-	private Dictionary<string, float> groupMults = new Dictionary<string, float>(); //building group-based multipliers
-	[SerializeField] private List<float> initialStoreCosts = new List<float>(); //starting build costs of each tier
-	[SerializeField] private float initialFarmCost = 100f; //initial cost of farm
-	[SerializeField] private List<float> initialStoreEarnings = new List<float>(); //starting build earnings of each tier
-	private Dictionary<string, int> foodTiers = new Dictionary<string, int>(); //tiers associated with food types
+	private Dictionary<string, float> groupMults = new Dictionary<string, float>(); 			//Building group-based multipliers
+	[SerializeField] private List<float> initialStoreCosts = new List<float>(); 				//Starting build costs of each tier
+	[SerializeField] private float initialFarmCost = 100f; 										//Initial cost of farm
+	[SerializeField] private List<float> initialStoreEarnings = new List<float>(); 				//Starting build earnings of each tier
+	private Dictionary<string, int> foodTiers = new Dictionary<string, int>();	 				//Tiers associated with food types
 	private List<float> tileOutputs = new List<float>();
 
-	private Dictionary<string, float> resourcesDiscovered = new Dictionary<string, float> (); //keep track of previously discovered resources (to show in UI)
-
-	private bool initialLoad = false;
+	private Dictionary<string, float> resourcesDiscovered = new Dictionary<string, float> (); 	//Keep track of previously discovered resources (to show in UI)
 
 	void Start () {
 		InitializeMoney ();
-		//LoadMoney ();
 	}
 
 	void Update() {
-		//if (!initialLoad) {
-		//	LoadMoney ();
-		//	initialLoad = true;
-		//}
+		
 	}
 
 	void FixedUpdate () {
 		if (mps > 0) {
 			pityMPS = 0;
 		}
-		money += (mps * Time.deltaTime * (minSpinMult + (PlanetSpinner.Instance.GetSpeedRatio () * (maxSpinMult - minSpinMult)))) + (pityMPS * Time.deltaTime);
-		totalMoneyAllTime += mps * Time.deltaTime;
+		AddEarnings (); //Main money-per-second calculation and addition
 	}
 		
 	//---------------------------------------------------------------------------
 
+	//Zeroing method for money stats
 	public void InitializeMoney() {
-		foreach (ItemController.Item food in GetComponent<ItemController>().items) {
+		foreach (ItemController.Item food in GetComponent<ItemController>().items) { //Loop through all foods
 			string foodType = food.name.ToLower ();
-			foodTiers [foodType] = food.rarity;
-			rawMults [foodType] = 1;
-			storeCostMults [foodType] = 1;
-			farmCostMults [foodType] = 1;
-			searchCostMult = 1;
-			storeCounts [foodType + "1"] = 0;
+			foodTiers [foodType] = food.rarity; //Build up indexable list of food rarities
+			rawMults [foodType] = 1; //Initialize raw multipliers of each food to 1
+			storeCostMults [foodType] = 1; //Init building cost mults of each food to 1
+			farmCostMults [foodType] = 1; //Init farm cost mults of each food to 1
+			storeCounts [foodType + "1"] = 0; //Init all store counts to 0
 			storeCounts [foodType + "2"] = 0;
-			resourceCounts [foodType] = 0;
-			resourcesDiscovered [foodType] = 0;
+			resourceCounts [foodType] = 0; //Init food counts to 0
+			resourcesDiscovered [foodType] = 0; //Set food as 'undiscovered'
 			foreach (ItemController.Item food2 in GetComponent<ItemController>().items) {
-				groupMults [food.name.ToLower() + "-" + food2.name.ToLower()] = 0;
+				groupMults [food.name.ToLower() + "-" + food2.name.ToLower()] = 0; //Init group mults of all foods to 0
 			}
 		}
 			
-		GetComponent<UIController>().UpdateResourceUI ();
+		GetComponent<UIController>().UpdateResourceUI (); //Update resource screen as empty
 
-		money = startingMoney;
-		mps = 0;
+		money = startingMoney; //Init money to starting amount
+		mps = 0; //Init money-per-second to 0
 		totalMoneyAllTime = 0;
+		searchCostMult = 1; //Init current search cost mult to 1
 	}
 
+	//Method for filling moneyStats dictionary for saving/loading
 	public void populateMoneyStats() {
 		moneyStats.Clear ();
 		moneyStats ["money"] = new Dictionary<string, float> { { "default", money } };
@@ -119,7 +114,6 @@ public class MoneyController : MonoBehaviour {
 
 		if (GetComponent<TileController>() != null) {
 			buildingGroups = GetComponent<TileController>().getTileBuildings ();
-			initialLoad = true;
 		}
 
 		GetComponent<UIController> ().UpdateResourceUI ();
@@ -128,16 +122,16 @@ public class MoneyController : MonoBehaviour {
 	public void SaveMoney() {
 		populateMoneyStats ();
 		BinaryFormatter bf = new BinaryFormatter ();
-		FileStream file1 = File.Open (Application.persistentDataPath + "/" + moneySaveFileName, FileMode.OpenOrCreate);
+		FileStream file1 = File.Open (Application.persistentDataPath + "/" + MONEY_SAVE_NAME, FileMode.OpenOrCreate);
 
 		bf.Serialize (file1, moneyStats);
 		file1.Close ();
 	}
 
 	public void LoadMoney() {
-		if (File.Exists (Application.persistentDataPath + "/" + moneySaveFileName)) {
+		if (File.Exists (Application.persistentDataPath + "/" + MONEY_SAVE_NAME)) {
 			BinaryFormatter bf = new BinaryFormatter ();
-			FileStream file1 = File.Open (Application.persistentDataPath + "/" + moneySaveFileName, FileMode.Open);
+			FileStream file1 = File.Open (Application.persistentDataPath + "/" + MONEY_SAVE_NAME, FileMode.Open);
 			Dictionary<string, Dictionary<string, float>> ms = (Dictionary<string, Dictionary<string, float>>)bf.Deserialize (file1);
 			file1.Close ();
 
@@ -149,8 +143,8 @@ public class MoneyController : MonoBehaviour {
 	}
 
 	public void DeleteMoneySave() {
-		if (File.Exists (Application.persistentDataPath + "/" + moneySaveFileName)) {
-			File.Delete (Application.persistentDataPath + "/" + moneySaveFileName);
+		if (File.Exists (Application.persistentDataPath + "/" + MONEY_SAVE_NAME)) {
+			File.Delete (Application.persistentDataPath + "/" + MONEY_SAVE_NAME);
 		}
 		InitializeMoney ();
 		calculateEarnings ();
@@ -166,10 +160,18 @@ public class MoneyController : MonoBehaviour {
 
 	//---------------------------------------------------------------------------
 
+	//Method for handling constant earning addition
+	private void AddEarnings() {
+		float earningsToAdd = (mps * Time.deltaTime * (minSpinMult + (PlanetSpinner.Instance.GetSpeedRatio () * (maxSpinMult - minSpinMult)))) + (pityMPS * Time.deltaTime);
+		money += earningsToAdd;
+		totalMoneyAllTime += earningsToAdd;
+	}
+
 	public void SetPityMPS(float val) {
 		pityMPS = val;
 	}
 
+	//Method for getting plain food type from building name
 	public string getFoodType(string building) {
 		if (building.Contains ("-")) {
 			return building.Substring (0, building.IndexOf ("-"));
@@ -182,6 +184,7 @@ public class MoneyController : MonoBehaviour {
 		}
 	}
 
+	//Method for getting building tier from building name
 	public int getBuildingTier(string building) {
 		if (building.Contains ("-1")) {
 			return 1;
@@ -198,10 +201,12 @@ public class MoneyController : MonoBehaviour {
 		}
 	}
 
+	//Method for getting rarity of food type
 	public int getFoodTier(string food) {
 		return foodTiers [food];
 	}
 
+	//Method for getting count of existing buildings from tile
 	public int countBuildings(List<string> buildings) {
 		int count = 0;
 		foreach (string s in buildings) {
@@ -212,10 +217,12 @@ public class MoneyController : MonoBehaviour {
 		return count;
 	}
 
+	//Method (used by UI controller) for getting potential output of new building
 	public float getNewStoreEarning(string foodType) {
 		return initialStoreEarnings [foodTiers [foodType] - 1] * rawMults[foodType];
 	}
 
+	//Method (used by UI controller) for getting existing group bonuses for new building
 	public List<string> getGroupBonuses(string foodType) {
 		List<string> existingBonuses = new List<string> ();
 		foreach (ItemController.Item food2 in GetComponent<ItemController>().items) {
@@ -234,10 +241,12 @@ public class MoneyController : MonoBehaviour {
 		return (mps + pityMPS);
 	}
 
+	//Method (used by UI controller) for getting current money-per-second multiplier for spinning planet
 	public float getSpinMult() {
 		return minSpinMult + (PlanetSpinner.Instance.GetSpeedRatio () * (maxSpinMult - minSpinMult));
 	}
 
+	//Method (used by UI controller) for getting current tile's money-per-second output
 	public float getTileOutput(int index) {
 		if (tileOutputs.Count < index) {
 			return 0;
@@ -251,19 +260,20 @@ public class MoneyController : MonoBehaviour {
 	}
 
 	public float getSearchCost() {
-		return 100 * searchCostMult;
+		return startingSearchCost * searchCostMult;
 	}
 
+	//Get build cost for new store
 	public float getStoreBuildCost(string foodType) {
-		//Debug.Log ("FoodTiers[" + foodType + "] = ...");
-		//Debug.Log(foodTiers[foodType]);
 		return initialStoreCosts [foodTiers [foodType]-1] * storeCostMults [foodType];
 	}
 
+	//Get upgrade cost for new store
 	public float getStoreUpgradeCost(string foodType) {
 		return getStoreBuildCost (foodType) * upgradeCostMult;
 	}
 
+	//Get destruction reward of store 'type'
 	public float getStoreDestroyReward(string type) {
 		if (type.Contains ("2")) {
 			return getStoreBuildCost (getFoodType (type)) * destroyLossMult * upgradeCostMult;
@@ -272,25 +282,27 @@ public class MoneyController : MonoBehaviour {
 		}
 	}
 
+	//Get build cost of new farm
 	public float getFarmBuildCost(string foodType) {
 		return initialStoreCosts [foodTiers[foodType]-1] * farmCostMults [foodType];
 	}
 
+	//Get upgrade cost for farm
 	public float getFarmUpgradeCost(string type) {
 		return getFarmBuildCost (getFoodType (type)) * Mathf.Pow (upgradeCostMult, getBuildingTier (type)-1);
 	}
 
+	//Get destruction reward of farm 'type'
 	public float getFarmDestroyReward(string type) {
 		return getFarmBuildCost (getFoodType (type)) * destroyLossMult * Mathf.Pow (upgradeCostMult, getBuildingTier (type)-1);
 	}
 
+	//Method for handling purchase/reward of building/upgrading/destroying buildings or searching tiles
 	public void makePurchase(float moneyAmount, float resourceAmount, string resourceType) {
 		if (moneyAmount < 0) {
 			Debug.Log ("Invalid purchase price " + moneyAmount);
 		} else if (resourceAmount < 0) {
 			Debug.Log ("Invalid purchase resource price " + resourceAmount);
-		//} else if (resourceType == "" && resourceAmount == 0) {
-		//	Debug.Log ("Empty purchase resource type");
 		} else {
 			money -= moneyAmount;
 			if (resourceAmount > 0)
@@ -298,31 +310,31 @@ public class MoneyController : MonoBehaviour {
 		}
 	}
 
+	//Main method for running through multipliers to calculate total earnings
 	public void calculateEarnings() {
-		Debug.Log ("CalculateEarnings");
+		//Fill tile buildings list if empty
 		if (buildingGroups.Count <= 0)
 			buildingGroups = GetComponent<TileController>().getTileBuildings ();
 		
-		//buildingGroups = GetComponent<TileController>().getTileBuildings ();
-		//update TileController's building list
+		//Update TileController's building list
 		GetComponent<TileController>().UpdateTileBuildings(buildingGroups);
 
-		//get base earning of food type, apply raw mults and group mults
+		//Get base earning of food type, apply raw mults and group mults
 		mps = 0;
 		/*foreach (KeyValuePair<string, float> entry in storeCounts) {
 			mps += entry.Value * rawMults [getFoodType(entry.Key)];
 		}*/
 
+		//Loop through all tile's buildings lists
 		for (int i = 0; i < buildingGroups.Count; i++) {
 			List<string> bGroup = buildingGroups [i];
 			float tileOutput = 0;
 
 			foreach (string b in bGroup) {
-				if (b.Contains("-") || b == "") 
+				if (b.Contains("-") || b == "") //Skip farms and empty slots
 					continue;
 				else {
-					Debug.Log (b);
-					//Debug.Log (b);
+					//Apply base multipliers to stores
 					if (b.Contains ("1")) {
 						tileOutput += initialStoreEarnings[foodTiers[getFoodType(b)]-1] * rawMults [getFoodType (b)];
 					} else {
@@ -331,12 +343,16 @@ public class MoneyController : MonoBehaviour {
 				}
 			}
 
-			//if there are 0 or 1 buildings in the group, they can't receive any group bonuses
+			//GROUP BONUS CALCULATION
+			//WILL REFACTOR LATER TO HANDLE MORE THAN 3 BUILDINGS
+
+			//If there are 0 or 1 buildings in the group, they can't receive any group bonuses
 			if (countBuildings(bGroup) < 2) {
 				tileOutput += 0;
 			} 
-			//if there's two buildings in the group, they can receive up to two bonuses
+			//If there's two buildings in the group, they can receive up to two bonuses
 			else if (countBuildings(bGroup) == 2) {
+				//Get bonuses between two stores
 				if (bGroup [2] == "") {
 					tileOutput += initialStoreEarnings [getBuildingTier (bGroup [0])-1] * rawMults [getFoodType (bGroup [0])] * groupMults [getFoodType(bGroup [0]) + "-" + getFoodType(bGroup [1])];
 					tileOutput += initialStoreEarnings [getBuildingTier (bGroup [1])-1] * rawMults [getFoodType (bGroup [1])] * groupMults [getFoodType(bGroup [1]) + "-" + getFoodType(bGroup [0])];
@@ -368,24 +384,26 @@ public class MoneyController : MonoBehaviour {
 					tileOutput += initialStoreEarnings [getBuildingTier (bGroup [2])-1] * rawMults [getFoodType (bGroup [2])] * groupMults [getFoodType(bGroup [2]) + "-" + getFoodType(bGroup [1])];
 				}
 			}
-			mps += tileOutput;
+
+			mps += tileOutput; //After calculations, add tile's output to money-per-second
+
+			//Update tile output list
 			if (tileOutputs.Count <= i) {
 				tileOutputs.Add (0);
 			}
 			tileOutputs [i] = tileOutput;
-			if (tileOutput > 0) {
-				//Debug.Log ("Adding tile output " + tileOutput + " to index " + i);
-			}
 		}
 
 		GetComponent<UIController>().UpdateResourceUI ();
 	}
 
+	//Add plain multiplier for 'foodType' buildings
 	public void AddRawMult(string foodType, float mult) {
 		rawMults [foodType] *= mult;
 		calculateEarnings ();
 	}
 
+	//Add multiplier for buildings of 'foodType1' and 'foodType2' paired together
 	public void AddGroupMult(string foodType1, string foodType2, float mult) {
 		if (groupMults [foodType1+"-"+foodType2] == 0) {
 			groupMults [foodType1+"-"+foodType2] = mult;
@@ -395,13 +413,15 @@ public class MoneyController : MonoBehaviour {
 		calculateEarnings ();
 	}
 
+	//Pay for searching of new tile
 	public void BuySearch() {
-		float purchaseCost = 100 * searchCostMult;
+		float purchaseCost = startingSearchCost * searchCostMult;
 		makePurchase (purchaseCost, 0, "");
 		searchCostMult *= mainMult;
 		GetComponent<TileController>().RevealTileResource ();
 	}
 
+	//Calculate and pay cost of new farm, update building list
 	public void AddFarm(string type, int groupNum) {
 		float purchaseCost = 0;
 		if (type.Contains ("1")) {
@@ -419,16 +439,18 @@ public class MoneyController : MonoBehaviour {
 		Debug.Log (getFoodType (type) + " resource count: " + resourceCounts [getFoodType (type)]);
 	}
 
+	//NEED TO REFACTOR TO PREVENT DESTRUCTION OF FARM WHEN RESOURCE COUNT IS 0
 	public void RemoveFarm(string type, int groupNum) {
 		groupNum = groupNum % 162;
 		resourceCounts [getFoodType (type)] -= getBuildingTier (type);
 		buildingGroups [groupNum].Remove (type);
 	}
 
+	//
 	public void AddStore(string type, int groupNum, int index) {
 		float purchaseCost = 0;
 		groupNum = groupNum % 162;
-		//upgrade case; remove old tier from counts
+		//Upgrade case; remove old tier from counts
 		if (type.Contains ("2")) {
 			storeCounts [getFoodType(type)+"1"]--;
 			purchaseCost = getStoreBuildCost(getFoodType(type)) * upgradeCostMult;

@@ -199,13 +199,13 @@ public class UIController : MonoBehaviour {
 
 		ManageStoreBuildAccess ();
 		ManageBonusAccess ();
-		if (!tileBuildOption.activeInHierarchy && (!enoughMoneyForBuild || !enoughResourcesForBuild) && GetComponent<TileController>().selectedTile != null) {
+		if (!tileBuildOption.activeInHierarchy && (!enoughMoneyForBuild || !enoughResourcesForBuild) && GetComponent<TileController>().getSelectedTile() != null) {
 			enoughMoneyForBuild = true;
 			enoughResourcesForBuild = true;
 		}
 
-		if (GetComponent<TileController>().toBuild != "" && !(GetComponent<TileController>().toBuild.Contains("1") && !GetComponent<TileController>().toBuild.Contains("-"))) {
-			ManageGeneralBuildAccess (GetComponent<TileController>().toBuild);
+		if (GetComponent<TileController>().getToBuild() != "" && !(GetComponent<TileController>().getToBuild().Contains("1") && !GetComponent<TileController>().getToBuild().Contains("-"))) {
+			ManageGeneralBuildAccess (GetComponent<TileController>().getToBuild());
 		}
 		if (Input.GetKeyDown (KeyCode.Escape)) {
 			TogglePauseMenu ();
@@ -259,7 +259,7 @@ public class UIController : MonoBehaviour {
 
 	public void CancelSelections() {
 		TileController tc = GetComponent<TileController>();
-		if (tc.selectedTile != null) {
+		if (tc.getSelectedTile() != null) {
 			CancelStoreBuild ();
 			CancelStoreDestroy ();
 			CancelStoreUpgrade ();
@@ -294,7 +294,7 @@ public class UIController : MonoBehaviour {
 	}
 
 	public void HandleMenuClose() {
-		if (GetComponent<TileController>().selectedTile != null) {
+		if (GetComponent<TileController>().getSelectedTile() != null) {
 			ShowTileMenu ();
 		}
 	}
@@ -354,7 +354,7 @@ public class UIController : MonoBehaviour {
 
 	public void UpdateDestroyText(int index) {
 		float price;
-		string buildingType = GetComponent<TileController>().selectedTile.buildings [index];
+		string buildingType = GetComponent<TileController>().getSelectedTile().buildings [index];
 		if (buildingType.Contains ("-")) {
 			price = mc.getFarmDestroyReward (buildingType);
 		} else {
@@ -386,7 +386,7 @@ public class UIController : MonoBehaviour {
 	}
 
 	public void UpdateFarmText() {
-		string type = GetComponent<TileController>().toBuild;
+		string type = GetComponent<TileController>().getToBuild();
 		string foodType = mc.getFoodType (type);
 		ItemController.Item foodItem = ic.GetItem (foodType);
 		GameObject foodIcon = tileBuildOption.transform.Find ("build_option_main/FoodIcon").gameObject;
@@ -407,7 +407,7 @@ public class UIController : MonoBehaviour {
 		};
 		AddActionToButton (bgPanel.GetComponent<Button> (), action1);
 		bgPanel.GetComponent<TooltipItem> ().itemType = "farmBuild";
-		bgPanel.GetComponent<TooltipItem> ().food = GetComponent<MoneyController>().getFoodType(GetComponent<TileController>().toBuild);
+		bgPanel.GetComponent<TooltipItem> ().food = GetComponent<MoneyController>().getFoodType(GetComponent<TileController>().getToBuild());
 
 		GameObject buildName = tileBuildOption.transform.Find ("build_option_main/BackgroundPanel/ForegroundPanel/BuildName").gameObject;
 		GameObject buildDesc = tileBuildOption.transform.Find ("build_option_main/BackgroundPanel/ForegroundPanel/BuildDescription").gameObject;
@@ -427,7 +427,7 @@ public class UIController : MonoBehaviour {
 	}
 
 	public void UpdateUpgradeText(int index) {
-		string building = GetComponent<TileController>().selectedTile.buildings [index];
+		string building = GetComponent<TileController>().getSelectedTile().buildings [index];
 		string foodType = mc.getFoodType (building);
 		ItemController.Item foodItem = ic.GetItem (foodType);
 		GameObject foodIcon = tileBuildOption.transform.Find ("build_option_main/FoodIcon").gameObject;
@@ -465,7 +465,7 @@ public class UIController : MonoBehaviour {
 			};
 			AddActionToButton (bgPanel.GetComponent<Button> (), action1);
 			bgPanel.GetComponent<TooltipItem> ().itemType = "farmUpgrade";
-			bgPanel.GetComponent<TooltipItem> ().food = GetComponent<MoneyController>().getFoodType(GetComponent<TileController>().toBuild);
+			bgPanel.GetComponent<TooltipItem> ().food = GetComponent<MoneyController>().getFoodType(GetComponent<TileController>().getToBuild());
 			//store upgrade case
 		} else {
 			buildName.GetComponent<Text> ().text = foodItem.store2Name;
@@ -478,7 +478,7 @@ public class UIController : MonoBehaviour {
 			};
 			AddActionToButton (bgPanel.GetComponent<Button> (), action1);
 			bgPanel.GetComponent<TooltipItem> ().itemType = "storeUpgrade";
-			bgPanel.GetComponent<TooltipItem> ().food = GetComponent<MoneyController>().getFoodType(GetComponent<TileController>().toBuild);
+			bgPanel.GetComponent<TooltipItem> ().food = GetComponent<MoneyController>().getFoodType(GetComponent<TileController>().getToBuild());
 		}
 	}
 
@@ -916,7 +916,7 @@ public class UIController : MonoBehaviour {
 			searchOption.SetActive (false);
 		}
 
-		tileOutputText.text = formatNumber (mc.getTileOutput (GetComponent<TileController>().selectedTile.getID () % 162)) + "/s";
+		tileOutputText.text = formatNumber (mc.getTileOutput (GetComponent<TileController>().getSelectedTile().getID () % 162)) + "/s";
 
 		enoughResourcesForBuild = false;
 		enoughMoneyForBuild = false;
@@ -980,11 +980,11 @@ public class UIController : MonoBehaviour {
 	}
 
 	public void OpenUpgradeOption() {
-		if (GetComponent<TileController>().selectedTile.buildings.Count == 0) {
+		if (GetComponent<TileController>().getSelectedTile().buildings.Count == 0) {
 			return;
 		}
 		else {
-			if (GetComponent<TileController>().selectedTile.buildings[0].Contains("-")) {
+			if (GetComponent<TileController>().getSelectedTile().buildings[0].Contains("-")) {
 				OpenUpgradeFarmOption();
 			} else {
 				HandleMenuOpen ();
@@ -1018,11 +1018,11 @@ public class UIController : MonoBehaviour {
 	}
 
 	public void OpenDestroyOption() {
-		if (GetComponent<TileController>().selectedTile.buildings.Count == 0) {
+		if (GetComponent<TileController>().getSelectedTile().buildings.Count == 0) {
 			return;
 		}
 		else {
-			if (GetComponent<TileController>().selectedTile.buildings[0].Contains("-")) {
+			if (GetComponent<TileController>().getSelectedTile().buildings[0].Contains("-")) {
 				OpenFarmDestroyOption();
 			} else {
 				HandleMenuOpen ();

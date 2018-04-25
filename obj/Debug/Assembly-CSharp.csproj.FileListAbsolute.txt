@@ -29,3 +29,5 @@ C:\Users\KingPepe\Desktop\CRAP Redux\WorldSim\Temp\bin\Debug\UnityEngine.VR.xml
 C:\Users\KingPepe\Desktop\CRAP Redux\WorldSim\obj\Debug\Assembly-CSharp.csprojResolveAssemblyReference.cache
 C:\Users\KingPepe\Desktop\CRAP Redux\WorldSim\obj\Debug\Assembly-CSharp.dll
 C:\Users\KingPepe\Desktop\CRAP Redux\WorldSim\obj\Debug\Assembly-CSharp.pdb
+C:\Users\KingPepe\Desktop\CRAP Redux\WorldSim\Temp\bin\Debug\TextMeshPro-5.6-1.0.56-Editor.dll
+C:\Users\KingPepe\Desktop\CRAP Redux\WorldSim\Temp\bin\Debug\TextMeshPro-5.6-1.0.56-Runtime.dll

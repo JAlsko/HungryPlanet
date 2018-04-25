@@ -167,15 +167,15 @@ public class DragToOrbit : MonoBehaviour
 			distanceMin = zoomDistMin;
 			clampX = false;
 
-			gameController.GetComponent<TileController>().selectedTile = newTarget.parent.gameObject.GetComponent<Tile>();
+			gameController.GetComponent<TileController>().setSelectedTile(newTarget.parent.gameObject.GetComponent<Tile>());
 			StartTileAudio ();
-			gameController.GetComponent<UIController>().OpenTileMenu (gameController.GetComponent<TileController>().selectedTile);
+			gameController.GetComponent<UIController>().OpenTileMenu (gameController.GetComponent<TileController>().getSelectedTile());
 			gameController.GetComponent<UIController>().UpdateTileMenu ();
 		}
 
 		if (CheckIfTile(target)) {
 			target.parent.gameObject.GetComponent<Tile> ().selected = false;
-			gameController.GetComponent<TileController>().selectedTile = null;
+			gameController.GetComponent<TileController>().setSelectedTile(null);
 		}
 		//rotationXAxis = newTarget.transform.localEulerAngles.x;
 		//rotationYAxis = newTarget.transform.localEulerAngles.y;
@@ -256,7 +256,7 @@ public class DragToOrbit : MonoBehaviour
 	}
 
 	void StartTileAudio() {
-		int biome = gameController.GetComponent<TileController>().selectedTile.color;
+		int biome = gameController.GetComponent<TileController>().getSelectedTile().color;
 		if (biomeSounds [biome] != null) {
 			ambienceSource.clip = biomeSounds [biome];
 			ambienceSource.Play ();

@@ -109,7 +109,7 @@ public class PlanetSpinner : MonoBehaviour {
 		if (!Input.GetMouseButton(0)) {
 			currentSpeed *= Mathf.Pow(currentSlowMult, 2);
 			if (gameController.GetComponent<LightController>() != null) {
-				gameController.GetComponent<LightController>().daySpeed = minDaySpeed + (currentSpeedRatio * (maxDaySpeed - minDaySpeed));
+				gameController.GetComponent<LightController>().setDaySpeed(minDaySpeed + (currentSpeedRatio * (maxDaySpeed - minDaySpeed)));
 			}
 			if (Mathf.Abs(currentSpeed) < .1f && currentSpeed != 0) {
 				StopSpin ();

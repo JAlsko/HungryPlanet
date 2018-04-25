@@ -10,12 +10,15 @@ public class BuildSpot : MonoBehaviour {
 	private Outline ol;
 	private TileController tc;
 
+	private Camera mainCam;
+
 	private Color buildColor;
 	private Color upgradeColor;
 	private Color destroyColor;
 
 	void Start () {
 		GameObject gameController = GameObject.FindWithTag ("GameController");
+		mainCam = GameObject.FindWithTag ("MainCamera").GetComponent<Camera>();
 		ol = GetComponent<Outline> ();
 		tc = gameController.GetComponent<TileController>();
 		if (!ol) {
@@ -23,9 +26,9 @@ public class BuildSpot : MonoBehaviour {
 			ol.color = 2;
 			ol.enabled = false;
 		}
-		buildColor = gameController.GetComponent<TileController>().buildColor;
-		upgradeColor = gameController.GetComponent<TileController>().upgradeColor;
-		destroyColor = gameController.GetComponent<TileController>().destroyColor;
+		buildColor = gameController.GetComponent<TileController>().getBuildColor("build");
+		upgradeColor = gameController.GetComponent<TileController>().getBuildColor("upgrade");
+		destroyColor = gameController.GetComponent<TileController>().getBuildColor("destroy");
 	}
 
 	void OnMouseOver() {
@@ -37,11 +40,11 @@ public class BuildSpot : MonoBehaviour {
 		if (UIHoverListener.Instance.isUIOverride) {
 			return;
 		} else {
-			if (gameController.GetComponent<TileController>().building) {
+			if (gameController.GetComponent<TileController>().getBuildStatus("build")) {
 				gameController.GetComponent<TileController>().FinalizeStoreBuild (transform.parent.GetSiblingIndex ());
-			} else if (gameController.GetComponent<TileController>().upgrading) {
+			} else if (gameController.GetComponent<TileController>().getBuildStatus("upgrade")) {
 				gameController.GetComponent<UIController>().OpenUpgradeStoreOption (transform.parent.GetSiblingIndex ());
-			} else if (gameController.GetComponent<TileController>().destroying) {
+			} else if (gameController.GetComponent<TileController>().getBuildStatus("destroy")) {
 				gameController.GetComponent<UIController>().OpenStoreDestroyOption (transform.parent.GetSiblingIndex ());
 			}
 		}
@@ -54,16 +57,16 @@ public class BuildSpot : MonoBehaviour {
 
 	void Update() {
 		if (hover && Time.timeScale != 0) {
-			if (tc.building) {
-				tc.mainCam.GetComponent<OutlineEffect> ().lineColor1 = buildColor;
+			if (tc.getBuildStatus("build")) {
+				mainCam.GetComponent<OutlineEffect> ().lineColor1 = buildColor;
 				ol.color = 1;
 				ol.enabled = true;
-			} else if (tc.destroying) {
-				tc.mainCam.GetComponent<OutlineEffect> ().lineColor1 = destroyColor;
+			} else if (tc.getBuildStatus("destroy")) {
+				mainCam.GetComponent<OutlineEffect> ().lineColor1 = destroyColor;
 				ol.color = 1;
 				ol.enabled = true;
-			} else if (tc.upgrading) {
-				tc.mainCam.GetComponent<OutlineEffect> ().lineColor1 = upgradeColor;
+			} else if (tc.getBuildStatus("upgrade")) {
+				mainCam.GetComponent<OutlineEffect> ().lineColor1 = upgradeColor;
 				ol.color = 1;
 				ol.enabled = true;
 			}

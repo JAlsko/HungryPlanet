@@ -227,9 +227,9 @@ public class Hexsphere : MonoBehaviour {
 	public void RevealAllResources() {
 		foreach (Tile t in tiles) {
 			if (!t.itemRevealed && t.color != 5) {
-				gameController.GetComponent<TileController>().selectedTile = t;
+				gameController.GetComponent<TileController>().setSelectedTile(t);
 				gameController.GetComponent<TileController>().RevealTileResource (1);
-				gameController.GetComponent<TileController>().selectedTile = null;
+				gameController.GetComponent<TileController>().setSelectedTile(null);
 			}
 		}
 	}
@@ -238,11 +238,11 @@ public class Hexsphere : MonoBehaviour {
 		RevealAllResources ();
 		foreach (Tile t in tiles) {
 			if (t.color != 4 && t.id%2==0) {
-				gameController.GetComponent<TileController>().selectedTile = t;
-				gameController.GetComponent<TileController>().toBuild = type;
+				gameController.GetComponent<TileController>().setSelectedTile(t);
+				gameController.GetComponent<TileController>().setToBuild(type);
 				gameController.GetComponent<TileController>().NewTileStore ();
 				//gameController.GetComponent<TileController>().FinalizeStoreBuild (1);
-				gameController.GetComponent<TileController>().selectedTile = null;
+				gameController.GetComponent<TileController>().setSelectedTile(null);
 			}
 		}
 	}
@@ -528,8 +528,8 @@ public class Hexsphere : MonoBehaviour {
 				}
 				break;
 			case 4: //Water
-				innerDecoration = Instantiate (Resources.Load ("Prefabs/Ocean") as GameObject);
-				outerDecoration = Instantiate (Resources.Load ("Prefabs/Ocean") as GameObject);
+				innerDecoration = Instantiate (Resources.Load ("Prefabs/ocean_inner") as GameObject);
+				outerDecoration = Instantiate (Resources.Load ("Prefabs/ocean_outer") as GameObject);
 				if (!tiles [i].isHexagon) {
 					innerDecoration.transform.localScale = Vector3.one * planetScale * .1f;
 					outerDecoration.transform.localScale = Vector3.one * planetScale * .1f;
